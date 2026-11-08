@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIR RAIDERS // REMASTERED COCKPIT EDITION</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Tactical Bar -->
+    <header class="top-bar">
+      <div class="brand">
+        <span class="badge">M-NETWORK // 1982</span>
+        <h1>AIR RAIDERS <span class="sub">REMASTERED</span></h1>
+      </div>
+
+      <div class="status-pills">
+        <div class="pill" id="phase-pill">
+          <span class="label">FASE:</span>
+          <span class="val" id="ui-phase">PISTA DE DECOLAGEM</span>
+        </div>
+        <div class="pill" id="sortie-pill">
+          <span class="label">SORTIDA:</span>
+          <span class="val" id="ui-sortie">#1 (0 ABATES)</span>
+        </div>
+        <div class="pill" id="rank-pill">
+          <span class="label">PATENTE:</span>
+          <span class="val" id="ui-rank">CADETE</span>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button id="btn-difficulty" class="cyber-btn small" title="Chave de Dificuldade do Atari 2600 (Novato B / Experiente A)">
+          MODO: <span id="lbl-diff">NOVATO (B)</span>
+        </button>
+        <button id="btn-audio" class="cyber-btn small" title="Ativar/Desativar Som">
+          SOM: <span id="lbl-audio">ON</span>
+        </button>
+        <button id="btn-rules" class="cyber-btn small">
+          MANUAL &amp; REGRAS
+        </button>
+        <button id="btn-reset" class="cyber-btn small danger">
+          REINICIAR
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport / Canvas -->
+    <main class="viewport-wrapper">
+      <canvas id="game-canvas" width="1280" height="720"></canvas>
+
+      <!-- Dynamic Flight Instructor / Mission Prompt Banner -->
+      <div id="hud-banner" class="hud-banner">
+        PRESSIONE <strong>[ESPAÇO]</strong> PARA ACELERAR NA PISTA
+      </div>
+
+      <!-- Start / Briefing Overlay -->
+      <div id="overlay-start" class="modal-overlay active">
+        <div class="modal-card">
+          <div class="modal-header">
+            <span class="tag">ENGENHARIA REVERSA // AIRAIDRS.BIN (4096 BYTES)</span>
+            <h2>AIR RAIDERS</h2>
+            <p class="subtitle">Simulador Tático de Combate Aéreo em Primeira Pessoa</p>
+          </div>
+          <div class="modal-body">
+            <div class="rules-grid">
+              <div class="rule-box">
+                <h3>1. DECOLAGEM</h3>
+                <p>Na pista (<span class="hl">ALT 00</span>), pressione <strong>ESPAÇO</strong> ou <strong>CLIQUE</strong> para ligar a pós-combustão. Quando o alerta de velocidade acender (~3s), puxe o manche (<strong>S</strong> ou <strong>SETA PARA BAIXO</strong>) para decolar!</p>
+              </div>
+              <div class="rule-box">
+                <h3>2. COMBATE &amp; FLAK</h3>
+                <p>Esquadrões inimigos patrulham até <strong>40.000 pés</strong>. A zona vermelha central no radar horizontal indica artilharia pesada (<strong>FLAK</strong>). Explosões próximas forçam seu caça a perder altitude! Suba para escapar do Flak.</p>
+              </div>
+              <div class="rule-box">
+                <h3>3. REGRA DOS 10 ABATES</h3>
+                <p>Seu combustível (<strong>FUEL</strong>) drena continuamente (e 2x mais rápido em grandes altitudes). Você <strong>DEVE abater pelo menos 10 caças inimigos por sortida</strong> para receber autorização de pouso e reabastecimento!</p>
+              </div>
+              <div class="rule-box">
+                <h3>4. POUSO NA BASE</h3>
+                <p>Com 10+ abates na sortida, desça até <strong>ALT 00</strong> e voe nivelado até avistar a pista. Empurre o manche (<strong>W / SETA CIMA</strong>) para alinhar o horizonte no topo do para-brisa e solte para tocar o solo. Sua nova munição será igual aos abates da sortida!</p>
+              </div>
+            </div>
+
+            <div class="controls-bar">
+              <div><kbd>W</kbd> / <kbd>↑</kbd> Mergulhar (Dive)</div>
+              <div><kbd>S</kbd> / <kbd>↓</kbd> Subir (Climb)</div>
+              <div><kbd>A</kbd> <kbd>D</kbd> / <kbd>←</kbd> <kbd>→</kbd> Inclinar (Bank)</div>
+              <div><kbd>ESPAÇO</kbd> / <kbd>MOUSE</kbd> Canhão Vulcan / Decolar</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-start-game" class="cyber-btn primary large">ENTRAR NO COCKPIT &amp; INICIAR MISSÃO</button>
+          </div>
+          <div class="credits-bar">
+            <span><strong>JOGO ORIGINAL (1982):</strong> Larry Zwick &bull; M Network (Mattel Electronics) &bull; Atari 2600</span>
+            <span><strong>REMASTER WEB &amp; ENGENHARIA REVERSA:</strong> <a href="https://github.com/realzurr" target="_blank" rel="noopener noreferrer">github.com/realzurr</a></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual / Rom Specs Modal -->
+      <div id="overlay-manual" class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-header">
+            <span class="tag">DOCUMENTAÇÃO TÉCNICA &amp; REGRAS OFICIAIS</span>
+            <h2>MANUAL DE VOO &amp; DADOS DA ROM</h2>
+          </div>
+          <div class="modal-body">
+            <div class="rules-grid">
+              <div class="rule-box">
+                <h3>PAINEL DE INSTRUMENTOS (HUD)</h3>
+                <ul>
+                  <li><strong>FUEL (Combustível):</strong> Inicia em 27 unidades (<code>$1B</code>). O consumo base aumenta proporcionalmente à sua altitude!</li>
+                  <li><strong>ALT (Altímetro):</strong> Exibido em milhares de pés (<code>00</code> a <code>40</code> — até 40.000 pés).</li>
+                  <li><strong>HITS (Abates):</strong> Total acumulado (<code>00</code> a <code>99</code>) e contador da sortida atual.</li>
+                  <li><strong>AMMO (Munição):</strong> Inicia em <code>99</code> projéteis. Recarregada no pouso igual ao número de abates da sortida!</li>
+                </ul>
+              </div>
+              <div class="rule-box">
+                <h3>CLASSIFICAÇÃO DE PILOTO (RATINGS)</h3>
+                <ul>
+                  <li><strong>0 – 9 Abates:</strong> Student Pilot (Cadete) — <em>Reprovado no pouso</em></li>
+                  <li><strong>10 – 24 Abates:</strong> Novice Pilot (Novato)</li>
+                  <li><strong>25 – 39 Abates:</strong> Fighter Pilot (Piloto de Caça)</li>
+                  <li><strong>40 – 64 Abates:</strong> Ace Pilot (Ás da Aviação)</li>
+                  <li><strong>65 – 89 Abates:</strong> Double Ace (Duplo Ás)</li>
+                  <li><strong>90+ Abates:</strong> Triple Ace (Triplo Ás Supremo)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="rom-note">
+              <strong>Fidelidade ao Binário (AIRAIDRS.BIN):</strong> Esta versão web executa as mesmas equações extraídas da engenharia reversa do código 6502 (endereços <code>$F07E–$FFF0</code>): física de pitch <code>$DA</code> com retorno automático, rolagem em 5 níveis de inclinação (<code>$F1F6</code>), 9 objetos simultâneos no espaço 3D (<code>$80–$9D</code>), gerador LFSR de 16 bits (<code>$F517</code>) e validação de pouso BCD (<code>$F285</code>).
+            </div>
+            <div class="credits-box">
+              <div class="credit-col">
+                <h4>CRÉDITOS DO JOGO ORIGINAL</h4>
+                <p><strong>Título:</strong> Air Raiders (Atari 2600 / VCS)</p>
+                <p><strong>Ano de Lançamento:</strong> 1982 (Catálogo #MT5661)</p>
+                <p><strong>Design &amp; Programação 6502:</strong> Larry Zwick</p>
+                <p><strong>Publicação:</strong> M Network (Mattel Electronics)</p>
+              </div>
+              <div class="credit-col">
+                <h4>CRÉDITOS DA VERSÃO REMASTER</h4>
+                <p><strong>Projeto:</strong> Air Raiders // Remastered Cockpit Edition</p>
+                <p><strong>Autor / Dev:</strong> <a href="https://github.com/realzurr" target="_blank" rel="noopener noreferrer">@realzurr (github.com/realzurr)</a></p>
+                <p><strong>Tecnologia:</strong> HTML5 Canvas 3D + Web Audio API Synth</p>
+                <p><strong>Base:</strong> Engenharia reversa direta de <code>AIRAIDRS.BIN</code></p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-close-manual" class="cyber-btn primary">VOLTAR AO VOO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over / Debriefing Overlay -->
+      <div id="overlay-gameover" class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-header">
+            <span class="tag" id="go-tag">FIM DE MISSÃO</span>
+            <h2 id="go-title">RELATÓRIO DE COMBATE</h2>
+            <p class="subtitle" id="go-reason">Combustível esgotado em espaço aéreo hostil.</p>
+          </div>
+          <div class="modal-body">
+            <div class="stats-summary">
+              <div class="stat-item">
+                <span class="s-label">TOTAL DE ABATES (HITS)</span>
+                <span class="s-val" id="go-hits">00</span>
+              </div>
+              <div class="stat-item">
+                <span class="s-label">SORTIDAS COMPLETAS</span>
+                <span class="s-val" id="go-sorties">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="s-label">PATENTE ALCANÇADA</span>
+                <span class="s-val highlight" id="go-rank">CADETE</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-restart-game" class="cyber-btn primary large">NOVA MISSÃO (DECOLAR NOVAMENTE)</button>
+          </div>
+          <div class="credits-bar">
+            <span>Original (1982): <strong>Larry Zwick / M Network</strong></span>
+            <span>Remaster Edition por <a href="https://github.com/realzurr" target="_blank" rel="noopener noreferrer">github.com/realzurr</a></span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Credits Footer -->
+    <footer class="bottom-bar">
+      <span><strong>AIR RAIDERS</strong> &copy; 1982 M Network (Mattel Electronics) &bull; Programado originalmente por <strong>Larry Zwick</strong> (Atari 2600)</span>
+      <span>Remastered Web Edition &amp; Engenharia Reversa por <a href="https://github.com/realzurr" target="_blank" rel="noopener noreferrer">@realzurr (github.com/realzurr)</a></span>
+    </footer>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
