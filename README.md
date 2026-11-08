@@ -10,7 +10,13 @@ Este projeto nasceu da **engenharia reversa direta do binário original (`AIRAID
 
 ---
 
-## 🎮 Como Jogar
+## 🎮 Jogue Agora no Navegador (Live Demo)
+
+👉 **[JOGAR AIR RAIDERS REMASTERED ONLINE](https://realzurr.github.io/air_Raiders/)** (`https://realzurr.github.io/air_Raiders/`)
+
+---
+
+## 💻 Executar Localmente
 
 Não há dependências externas nem necessidade de build.
 
